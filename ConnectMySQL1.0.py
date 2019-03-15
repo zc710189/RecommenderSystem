@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import MySQLdb as Mdb
 import pymysql as pm
 import re
 
@@ -78,7 +77,7 @@ def FindTable():
         table_list = [re.sub("'", '', each) for each in table_list]
         for i in table_list:
             print(i)
-        TableName = raw_input("请选择的表名：")
+        TableName = input("请选择的表名：")
         if TableName in table_list:
             return TableName
         else:
@@ -91,7 +90,7 @@ def FindAttribute(TableName):
     temp_list = re.findall('(\'.*?\')', str(TableField))
     temp_list = [re.sub("'", '', each) for each in temp_list]
     Attribute = []
-    for i in range(len(temp_list) / 5):
+    for i in range(int(len(temp_list) / 5)):
         Attribute.append(temp_list[i * 5])
     return Attribute
 #添加函数
@@ -114,7 +113,7 @@ def Add():
         temp_data = []
         for i in range(len(Attribute)):
             print("请输入%s："%(Attribute[i]))
-            temp=raw_input("")
+            temp=input("")
             temp_data.append(temp)
         try:
             con.execute(sql_insert, temp_data)
@@ -134,8 +133,8 @@ def Delelt():
     Attribute = FindAttribute(TableName)
     for i in Attribute:
         print(i)
-    SelAttribute = raw_input("请选择属性：")
-    AttributeValue = raw_input("请选择属性值：")
+    SelAttribute = input("请选择属性：")
+    AttributeValue = input("请选择属性值：")
     sql_delete = "DELETE FROM "+TableName+" where "+SelAttribute+"='"+AttributeValue+"'"
     con.execute(sql_delete)
 #查询函数
@@ -149,9 +148,10 @@ def Lookup():
     for i in range(num+1):
         for j in range(len(Attribute)):
             if 0==i:
-                print(Attribute[j])
+                print(Attribute[j],end=" ")
             else:
-                print(data_all[i-1][j])
+                print(data_all[i-1][j],end=" ")
+        print("")
 #更改函数
 def Change():
     print("请从以下表中选择修改数据的表：")
@@ -161,16 +161,16 @@ def Change():
     for i in Attribute:
         print(i)
     while True:
-        LookupSelAttribute = raw_input("请选择查找属性：")
-        LookupAttributeValue = raw_input("请选择查找属性值：")
+        LookupSelAttribute = input("请选择查找属性：")
+        LookupAttributeValue = input("请选择查找属性值：")
         sql_Lookup = "SELECT * FROM "+TableName+" WHERE "+LookupSelAttribute+"='"+LookupAttributeValue+"'"
         if 0==con.execute(sql_Lookup):
             print("没有该字段！请重新输入")
             continue
         else:
             break
-    ModSelAttribute = raw_input("请选择修改属性：")
-    ModAttributeValue = raw_input("请选择修改属性值：")
+    ModSelAttribute = input("请选择修改属性：")
+    ModAttributeValue = input("请选择修改属性值：")
     sql_update = "UPDATE "+TableName+" SET "+ModSelAttribute+"="+ModAttributeValue+" WHERE "+LookupSelAttribute+"='"+LookupAttributeValue+"'"
     con.execute(sql_update)
 #循环
@@ -193,32 +193,21 @@ while True:
         break
     else:
         print("请输入1-5的数字！")
-#为了写2.0删除表和数据库
-sql = "show tables;"
-con.execute(sql)
-tables = [con.fetchall()]
-table_list = re.findall('(\'.*?\')', str(tables))
-table_list = [re.sub("'", '', each) for each in table_list]
-for i in table_list:
-    delsql="DROP TABLE "+i
-    con.execute(delsql)
-delsql="DROP DATABASE "+db_name
-con.execute(delsql)
 #test部分
-"""sqladd1 = "INSERT INTO PROBLEM(QUESTION_TYPE, TOTAL_SCORE) VALUES ('chen', 10)"
-sqladd2 = "INSERT INTO PROBLEM(QUESTION_TYPE, TOTAL_SCORE) VALUES ('zhen', 20)"
-sqladd3 = "INSERT INTO MISTAKEN_QUESTIONS(QUESTION_TYPE, TOTAL_SCORE ,SCORE) VALUES ('1234321', 10 ,6)"
+sqladd1 = "INSERT INTO PROBLEM(TITLE_NUMBER, QUESTION_TYPE, TOTAL_SCORE) VALUES (1, 'chen', 10)"
+sqladd2 = "INSERT INTO PROBLEM(TITLE_NUMBER, QUESTION_TYPE, TOTAL_SCORE) VALUES (2, 'zhen', 20)"
+sqladd3 = "INSERT INTO MISTAKEN_QUESTIONS(TITLE_NUMBER, QUESTION_TYPE, TOTAL_SCORE ,SCORE) VALUES (1, '1234321', 10 ,6)"
 
 con.execute(sqladd1)
 con.execute(sqladd2)
 con.execute(sqladd3)
-sqlR = "show columns from RS_db.MISTAKEN_QUESTIONS;"
+sqlR = "show columns from RS_db.PROBLEM;"
 con.execute(sqlR)
 TableField = [con.fetchall()]
 db_list = re.findall('(\'.*?\')', str(TableField))
 db_list = [re.sub("'", '', each) for each in db_list]
 test_list = []
-for i in range(len(db_list)/5):
+for i in range(int(len(db_list)/5)):
     test_list.append(db_list[i*5])
 print(test_list)
 data_one = cur.fetchone()
@@ -235,8 +224,8 @@ data_all = con.fetchall()
 data_list = re.findall('(\'.*?\')', str(data_all))
 data_list = [re.sub("'", '', each) for each in data_list]
 print(data_all)
-LookupSelAttribute = raw_input("请选择查找属性：")
-LookupAttributeValue = raw_input("请选择查找属性值：")
+LookupSelAttribute = input("请选择查找属性：")
+LookupAttributeValue = input("请选择查找属性值：")
 sql_Lookup = "SELECT * FROM MISTAKEN_QUESTIONS WHERE "+LookupSelAttribute+"='"+LookupAttributeValue+"'"
 print(con.execute(sql_Lookup))
 sqldel1 = "DELETE FROM PROBLEM WHERE QUESTION_TYPE='chen'"
@@ -244,5 +233,17 @@ sqldel2 = "DELETE FROM PROBLEM WHERE QUESTION_TYPE='zhen'"
 sqldel3 = "DELETE FROM MISTAKEN_QUESTIONS WHERE QUESTION_TYPE='1234321'"
 con.execute(sqldel1)
 con.execute(sqldel2)
-con.execute(sqldel3)"""
+con.execute(sqldel3)
 #test部分
+#为了写2.0删除表和数据库
+sql = "show tables;"
+con.execute(sql)
+tables = [con.fetchall()]
+table_list = re.findall('(\'.*?\')', str(tables))
+table_list = [re.sub("'", '', each) for each in table_list]
+for i in table_list:
+    delsql="DROP TABLE "+i
+    con.execute(delsql)
+delsql="DROP DATABASE "+db_name
+con.execute(delsql)
+
